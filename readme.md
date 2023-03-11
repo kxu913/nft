@@ -1,3 +1,6 @@
+## Blockchain base on Flow
+*基于Flow的框架，实现一个用户在区块链上点赞功能
+
 ### check account
 https://flow-view-source.com/testnet/account/0xbbbe32d615d7c84b/keys
 ### check tx
