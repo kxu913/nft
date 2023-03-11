@@ -1,0 +1,10 @@
+go 1.18
+
+use (
+	.
+	./src/account
+	./src/constants
+	./src/contracts
+	./src/scripts
+	./src/transactions
+)
