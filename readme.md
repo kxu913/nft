@@ -1,6 +1,7 @@
 ## Blockchain base on Flow
 *基于Flow的框架，实现一个用户在区块链上点赞功能*
-
+### Pre condition
+*Register an account and get some flowtoken using https://testnet-faucet.onflow.org/*
 ### check account
 https://flow-view-source.com/testnet/account/0xbbbe32d615d7c84b/keys
 ### check tx
