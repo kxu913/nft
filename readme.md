@@ -1,23 +1,11 @@
 ## Blockchain base on Flow
 *基于Flow的框架，实现一个用户在区块链上点赞功能*
 ### Pre condition
-*Register an account and get some flowtoken using https://testnet-faucet.onflow.org/*
-### check account
-https://flow-view-source.com/testnet/account/0xbbbe32d615d7c84b/keys
-### check tx
-https://flow-view-source.com/testnet/tx/e522d18b89cc43dec3690735f819117cac004473a61d7f57f9808f2466e42053
+- *Register an account and get some flowtoken using https://testnet-faucet.onflow.org/*
 
-### basic flow cli command
+- *View Account https://flow-view-source.com/testnet/account/0xbbbe32d615d7c84b/keys*
 
-- Execute script
-```flow scripts execute ./cadence/scripts/Listing.cdc 0xbbbe32d615d7c84b  --network testnet```
-- Send TX
-```flow transactions send ./cadence/transactions/demo/sell_nft.cdc 0x0f4e1d420f06ad6d 1 10.0 --signer userA --network testnet```
-- Deploy contract
-```flow accounts add-contract ./cadence/contracts/UsageNFT.cdc --signer admin --network testnet```
-```flow accounts update-contract ./cadence/contracts/UsageNFT.cdc --signer admin --network testnet```
-
-### Basic steps, 
+### Let start
 - Deploy contract into admin account ```flow accounts add-contract ./cadence/contracts/UsageNFT.cdc --signer admin --network testnet```
 - Init Account using ```flow transactions send ./cadence/transactions/init/setup_account.cdc  --signer userD --network testnet```
 - Mint a NFT using ```flow transactions send ./cadence/transactions/nft/mint_nft.cdc 0x2248a8075cee5881 --signer admin --network testnet```
