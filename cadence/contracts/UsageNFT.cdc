@@ -17,70 +17,50 @@ pub contract UsageNFT: NonFungibleToken  {
 
     pub resource NFT: NonFungibleToken.INFT, MetadataViews.Resolver {
         pub let id: UInt64
-
         pub let name: String
         pub let description: String
-        pub let thumbnail: String
-        access(self) let royalties: [MetadataViews.Royalty]
         access(self) let metadata: {String: AnyStruct}
     
         init(
             id: UInt64,
             name: String,
             description: String,
-            thumbnail: String,
-            royalties: [MetadataViews.Royalty],
             metadata: {String: AnyStruct},
         ) {
             self.id = id
             self.name = name
             self.description = description
-            self.thumbnail = thumbnail
-            self.royalties = royalties
+
             self.metadata = metadata
         }
     
         pub fun getViews(): [Type] {
             return [
-                Type<MetadataViews.Display>(),
-                Type<MetadataViews.Royalties>(),
-                Type<MetadataViews.Editions>(),
-                Type<MetadataViews.ExternalURL>(),
+                // Type<MetadataViews.Display>(),
+
                 Type<MetadataViews.NFTCollectionData>(),
-                Type<MetadataViews.NFTCollectionDisplay>(),
+
                 Type<MetadataViews.Serial>(),
+
                 Type<MetadataViews.Traits>()
             ]
         }
 
         pub fun resolveView(_ view: Type): AnyStruct? {
             switch view {
-                case Type<MetadataViews.Display>():
-                    return MetadataViews.Display(
-                        name: self.name,
-                        description: self.description,
-                        thumbnail: MetadataViews.HTTPFile(
-                            url: self.thumbnail
-                        )
-                    )
-                case Type<MetadataViews.Editions>():
-                    // There is no max number of NFTs that can be minted from this contract
-                    // so the max edition field value is set to nil
-                    let editionInfo = MetadataViews.Edition(name: "Usage NFT Edition", number: self.id, max: nil)
-                    let editionList: [MetadataViews.Edition] = [editionInfo]
-                    return MetadataViews.Editions(
-                        editionList
-                    )
+                // case Type<MetadataViews.Display>():
+                //     return MetadataViews.Display(
+                //         name: self.name,
+                //         description: self.description,
+                //         thumbnail: nil
+                //     )
+
                 case Type<MetadataViews.Serial>():
                     return MetadataViews.Serial(
                         self.id
                     )
-                case Type<MetadataViews.Royalties>():
-                    return MetadataViews.Royalties(
-                        self.royalties
-                    )
-                case Type<MetadataViews.ExternalURL>():
-                    return MetadataViews.ExternalURL("https://example-nft.onflow.org/".concat(self.id.toString()))
+              
+               
                 case Type<MetadataViews.NFTCollectionData>():
                     return MetadataViews.NFTCollectionData(
                         storagePath: UsageNFT.CollectionStoragePath,
@@ -93,36 +73,18 @@ pub contract UsageNFT: NonFungibleToken  {
                             return <-UsageNFT.createEmptyCollection()
                         })
                     )
-                case Type<MetadataViews.NFTCollectionDisplay>():
-                    let media = MetadataViews.Media(
-                        file: MetadataViews.HTTPFile(
-                            url: "https://assets.website-files.com/5f6294c0c7a8cdd643b1c820/5f6294c0c7a8cda55cb1c936_Flow_Wordmark.svg"
-                        ),
-                        mediaType: "image/svg+xml"
-                    )
-                    return MetadataViews.NFTCollectionDisplay(
-                        name: "The Usage Collection",
-                        description: "This collection is used as an usage to help you develop your next Flow NFT.",
-                        externalURL: MetadataViews.ExternalURL("https://example-nft.onflow.org"),
-                        squareImage: media,
-                        bannerImage: media,
-                        socials: {
-                            "twitter": MetadataViews.ExternalURL("https://twitter.com/flow_blockchain")
-                        }
-                    )
+
                 case Type<MetadataViews.Traits>():
-                    // exclude mintedTime and foo to show other uses of Traits
+            
                     let excludedTraits = ["mintedTime", "foo"]
                     let traitsView = MetadataViews.dictToTraits(dict: self.metadata, excludedNames: excludedTraits)
 
-                    // mintedTime is a unix timestamp, we should mark it with a displayType so platforms know how to show it.
                     let mintedTimeTrait = MetadataViews.Trait(name: "mintedTime", value: self.metadata["mintedTime"]!, displayType: "Date", rarity: nil)
                     traitsView.addTrait(mintedTimeTrait)
 
-                    // foo is a trait with its own rarity
-                    let fooTraitRarity = MetadataViews.Rarity(score: 10.0, max: 100.0, description: "Common")
-                    let fooTrait = MetadataViews.Trait(name: "foo", value: self.metadata["foo"], displayType: nil, rarity: fooTraitRarity)
-                    traitsView.addTrait(fooTrait)
+                    // let fooTraitRarity = MetadataViews.Rarity(score: 10.0, max: 100.0, description: "Common")
+                    // let fooTrait = MetadataViews.Trait(name: "foo", value: self.metadata["foo"], displayType: nil, rarity: fooTraitRarity)
+                    // traitsView.addTrait(fooTrait)
                     
                     return traitsView
 
@@ -223,9 +185,7 @@ pub contract UsageNFT: NonFungibleToken  {
         pub fun mintNFT(
             recipient: &{NonFungibleToken.CollectionPublic},
             name: String,
-            description: String,
-            thumbnail: String,
-            royalties: [MetadataViews.Royalty],
+            description: String
         ) {
             let metadata: {String: AnyStruct} = {}
             let currentBlock = getCurrentBlock()
@@ -234,15 +194,13 @@ pub contract UsageNFT: NonFungibleToken  {
             metadata["minter"] = recipient.owner!.address
 
             // this piece of metadata will be used to show embedding rarity into a trait
-            metadata["foo"] = "bar"
+            // metadata["foo"] = "bar"
 
             // create a new NFT
             var newNFT <- create NFT(
                 id: UsageNFT.totalSupply,
                 name: name,
                 description: description,
-                thumbnail: thumbnail,
-                royalties: royalties,
                 metadata: metadata,
             )
 

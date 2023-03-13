@@ -3,7 +3,7 @@ import UsageNFT from 0xbbbe32d615d7c84b
 
 
 
-pub fun main(address: Address):&NonFungibleToken.NFT {
+pub fun main(address: Address,id: UInt64):&NonFungibleToken.NFT?{
     // Get the public account object for account 0x01
     let account = getAccount(address)
 
@@ -11,10 +11,6 @@ pub fun main(address: Address):&NonFungibleToken.NFT {
     let collectionRef = account.getCapability(UsageNFT.CollectionPublicPath)
                        .borrow<&{NonFungibleToken.CollectionPublic}>()
                        ?? panic("Could not borrow acct2 nft sale reference")
-    var ids = collectionRef.borrowNFT(id:0)
-
-    
-    return ids
+    return collectionRef.borrowNFT(id:id)
 
 }
- 

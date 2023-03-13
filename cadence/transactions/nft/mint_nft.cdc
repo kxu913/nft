@@ -2,12 +2,11 @@ import NonFungibleToken from 0x631e88ae7f1d7c20
 import UsageNFT from 0xbbbe32d615d7c84b
 
 
-transaction(recipient: Address,saleItemPrice: UFix64) {
+transaction(recipient: Address) {
 
     let minter: &UsageNFT.NFTMinter
 
     let recipientCollectionRef: &{NonFungibleToken.CollectionPublic}
-
     
     let mintingIDBefore: UInt64
 
@@ -27,9 +26,7 @@ transaction(recipient: Address,saleItemPrice: UFix64) {
         self.minter.mintNFT(
             recipient: self.recipientCollectionRef,
             name: "demo",
-            description: "demo desc",
-            thumbnail: "",
-            royalties: []
+            description: "demo desc"
         )
 
     }

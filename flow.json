@@ -13,16 +13,20 @@
 
 		"admin": {
 			"address": "0xbbbe32d615d7c84b",
-			"key": "z"
+			"key": "21eda1886371b57badd1812fb7dddb489a37c95625c015eacd6dd59d3fe0172b"
 		  },
 		  
 		"userA": {
 			"address": "0x5460d94b596cff14",
-			"key": "y"
+			"key": "5a4eb6e94efe5b4d8a31289c0415c1ab8f055d4c7910e09fa249cb27bdd1583a"
 		  },
 		  "userB": {
 			"address": "0x0f4e1d420f06ad6d",
-			"key": "x"
+			"key": "065f8e7cc2895985cd6627f8738a2eac3e92dafede297ce127c0738603735503"
+		  },
+		  "userD": {
+			"address": "0x2248a8075cee5881",
+			"key": "5a6211e3a052e350c7ae63b5d47f3728c46025be2af17bf3d88d8ae8345e2bad"
 		  }
 	}
 }

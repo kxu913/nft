@@ -46,6 +46,7 @@ pub contract AssetUsage {
             self.likes = {}
             self.collects = {}
             var i = 0
+            
             while i < self.assets.length {
                 self.likes[self.assets[i]] = 0
                 self.collects[self.assets[i]] = 0

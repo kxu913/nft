@@ -5,33 +5,33 @@ import UsageNFT from 0xbbbe32d615d7c84b
 import MetadataViews from 0x631e88ae7f1d7c20
 import NFTStorefrontV2 from 0x2d55b98eb200daef
 
-pub fun getOrCreateStorefront(account: AuthAccount): &NFTStorefrontV2.Storefront {
-    if let storefrontRef = account.borrow<&NFTStorefrontV2.Storefront>(from: NFTStorefrontV2.StorefrontStoragePath) {
-        return storefrontRef
-    }
+transaction(saleNFTId:UInt64, saleItemPrice: UFix64) {
 
-    let storefront <- NFTStorefrontV2.createStorefront()
 
-    let storefrontRef = &storefront as &NFTStorefrontV2.Storefront
-
-    account.save(<-storefront, to: NFTStorefrontV2.StorefrontStoragePath)
-
-    account.link<&NFTStorefrontV2.Storefront{NFTStorefrontV2.StorefrontPublic}>(NFTStorefrontV2.StorefrontPublicPath, target: NFTStorefrontV2.StorefrontStoragePath)
-
-    return storefrontRef
-}
-
-transaction(saleId: UFix64,saleItemPrice: UFix64) {
+    /// Reference to the receiver's collection
+    let recipientCollectionRef: &{NonFungibleToken.CollectionPublic}
 
     // List
     let flowReceiver: Capability<&FlowToken.Vault{FungibleToken.Receiver}>
     let usageProvider: Capability<&UsageNFT.Collection{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>
     let storefront: &NFTStorefrontV2.Storefront
-    
+    var saleCuts: [NFTStorefrontV2.SaleCut]
+    var marketplacesCapability: [Capability<&AnyResource{FungibleToken.Receiver}>]
+
     prepare(signer: AuthAccount) {
-       
+
+        // Borrow the recipient's public NFT collection reference
+        self.recipientCollectionRef =signer
+            .getCapability(UsageNFT.CollectionPublicPath)
+            .borrow<&{NonFungibleToken.CollectionPublic}>()
+            ?? panic("Could not get receiver reference to the NFT Collection")
+
+        // Prepare to list
+        self.saleCuts = []
+        self.marketplacesCapability = []
+
         // We need a provider capability, but one is not provided by default so we create one if needed.
-        let usageNFTCollectionProviderPrivatePath = /private/usageNFTCollectionProvider
+        let usageNFTCollectionProviderPrivatePath = /private/usageNFTCollectionProviderForNFTStorefront
 
         // Receiver for the sale cut.
         self.flowReceiver = signer.getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver)!
@@ -47,11 +47,11 @@ transaction(saleId: UFix64,saleItemPrice: UFix64) {
 
         assert(self.usageProvider.borrow() != nil, message: "Missing or mis-typed KittyItems.Collection provider")
 
-        self.storefront =  getOrCreateStorefront(account: signer)
+        self.storefront = signer.borrow<&NFTStorefrontV2.Storefront>(from: NFTStorefrontV2.StorefrontStoragePath)
+            ?? panic("Missing or mis-typed NFTStorefrontV2 Storefront")
     }
 
     execute {
-
 
         var totalRoyaltyCut = 0.0
         var commissionAmount = 0.0
@@ -62,24 +62,22 @@ transaction(saleId: UFix64,saleItemPrice: UFix64) {
             receiver: self.flowReceiver,
             amount: effectiveSaleItemPrice - totalRoyaltyCut
         ))
+
+
         
         // Execute to create listing
         self.storefront.createListing(
             nftProviderCapability: self.usageProvider,
             nftType: Type<@UsageNFT.NFT>(),
-            nftID: saleId,
+            nftID: saleNFTId,
             salePaymentVaultType: Type<@FlowToken.Vault>(),
             saleCuts: self.saleCuts,
             marketplacesCapability: self.marketplacesCapability.length == 0 ? nil : self.marketplacesCapability,
             customID: nil,
             commissionAmount: UFix64(0),
-            expiry: UInt64(getCurrentBlock().timestamp) + UInt64(500)
+            expiry: UInt64(getCurrentBlock().timestamp) + UInt64(50000)
         )
     }
 
-    post {
-        self.recipientCollectionRef.getIDs().contains(self.mintingIDBefore): "The next NFT ID should have been minted and delivered"
-        UsageNFT.totalSupply == self.mintingIDBefore + 1: "The total supply should have been increased by 1"
-    }
 }
  
