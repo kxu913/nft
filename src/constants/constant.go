@@ -8,8 +8,8 @@ var (
 	SigAlgoName  = crypto.ECDSA_P256.String()
 	HashAlgoName = crypto.SHA3_256.String()
 	AdminServiceAddr = "0xbbbe32d615d7c84b"
-	AdminServicePrivKey = "privateKey"
-	AdminServicePubKey = "publicKey"
+	AdminServicePrivKey = "x"
+	AdminServicePubKey = "y"
 	Host              = grpc.TestnetHost
 
 )

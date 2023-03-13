@@ -9,6 +9,20 @@
 		"emulator-account": {
 			"address": "f8d6e0586b0a20c7",
 			"key": "a6dd69c6bef117d462ad11c01e3a148e6cf49bea185878c49933c9fbcca89d42"
-		}
+		},
+
+		"admin": {
+			"address": "0xbbbe32d615d7c84b",
+			"key": "z"
+		  },
+		  
+		"userA": {
+			"address": "0x5460d94b596cff14",
+			"key": "y"
+		  },
+		  "userB": {
+			"address": "0x0f4e1d420f06ad6d",
+			"key": "x"
+		  }
 	}
 }
